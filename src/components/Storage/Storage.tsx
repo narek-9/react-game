@@ -23,8 +23,8 @@ export const Storage: FC<IStorageProps> = ({ currentCity, storage, goods }) => {
     if (storage.length < 8) {
       return Array(8 - storage.length)
         .fill(0)
-        .map(() => {
-          return <li className="good-item"></li>;
+        .map((_, index) => {
+          return <li className="good-item no-item" key={index + 100}></li>;
         });
     }
   };
@@ -37,8 +37,8 @@ export const Storage: FC<IStorageProps> = ({ currentCity, storage, goods }) => {
         <ul className="goods">
           {storage.map((item) => {
             return (
-              <li className="good-item">
-                {findFoodById(item.id)}, {item.qty} шт.
+              <li className={"good-item " + "item-" + item.id} key={item.id}>
+                <span className="good-description">{item.qty} шт.</span>
               </li>
             );
           })}

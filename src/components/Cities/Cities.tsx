@@ -27,6 +27,7 @@ export const Cities: FC<ICitiesProps> = ({ currentCity, onChange }) => {
               e.preventDefault();
               onChange(city.id);
             }}
+            key={city.id}
           >
             {city.title}
           </a>
