@@ -19,17 +19,33 @@ export const Storage: FC<IStorageProps> = ({ currentCity, storage, goods }) => {
     return goods.find((item) => item.id === itemId)?.title;
   };
 
+  const getEmptyCells = () => {
+    if (storage.length < 8) {
+      return Array(8 - storage.length)
+        .fill(0)
+        .map(() => {
+          return <li className="good-item"></li>;
+        });
+    }
+  };
+
   return (
-    <>
-      {storage.map((item) => {
-        return (
-          <span>
-            {item.id}. {findFoodById(item.id)} - {item.qty} шт.
-            <br />
-          </span>
-        );
-      })}
-      Склад
-    </>
+    <div>
+      <h2 className="title">Мой склад</h2>
+
+      <div className="panel">
+        <ul className="goods">
+          {storage.map((item) => {
+            return (
+              <li className="good-item">
+                {findFoodById(item.id)}, {item.qty} шт.
+              </li>
+            );
+          })}
+
+          {getEmptyCells()}
+        </ul>
+      </div>
+    </div>
   );
 };
