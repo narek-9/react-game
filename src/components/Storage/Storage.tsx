@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 
 import "./Storage.scss";
 
@@ -8,13 +8,25 @@ interface IStorageProps {
     id: number;
     qty: number;
   }[];
+  selectedGood: number | null;
   goods: {
     id: number;
     title: string;
   }[];
+  onSelectGood: (goodId: number) => void;
+  onSell: (goodId: number, qty: number) => void;
 }
 
-export const Storage: FC<IStorageProps> = ({ currentCity, storage, goods }) => {
+export const Storage: FC<IStorageProps> = ({
+  currentCity,
+  storage,
+  selectedGood,
+  goods,
+  onSelectGood,
+  onSell,
+}) => {
+  const [qty, setQty] = useState<number>(0);
+
   const findFoodById = (itemId: number) => {
     return goods.find((item) => item.id === itemId)?.title;
   };
@@ -37,7 +49,15 @@ export const Storage: FC<IStorageProps> = ({ currentCity, storage, goods }) => {
         <ul className="goods">
           {storage.map((item) => {
             return (
-              <li className={"good-item " + "item-" + item.id} key={item.id}>
+              <li
+                className={
+                  "good-item item-" +
+                  item.id +
+                  (selectedGood === item.id ? " selected" : "")
+                }
+                onClick={() => onSelectGood(item.id)}
+                key={item.id}
+              >
                 <span className="good-description">{item.qty} шт.</span>
               </li>
             );
@@ -45,6 +65,33 @@ export const Storage: FC<IStorageProps> = ({ currentCity, storage, goods }) => {
 
           {getEmptyCells()}
         </ul>
+
+        {selectedGood ? (
+          <div className="sell-panel">
+            <div>{findFoodById(selectedGood)}</div>
+            <div className="controls">
+              <input
+                type="text"
+                className="input"
+                value={qty}
+                onChange={(e) => {
+                  setQty(parseInt(e.target.value));
+                }}
+              />
+              шт.
+              <button
+                className="button"
+                onClick={() => {
+                  onSell(selectedGood, qty);
+                }}
+              >
+                Продать
+              </button>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

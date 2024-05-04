@@ -10,3 +10,8 @@ export type storage = {
     qty: number;
   }[];
 };
+
+export type good = {
+  id: number;
+  title: string;
+};

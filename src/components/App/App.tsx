@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 
-import { storage } from "../../types";
+import { good, storage } from "../../types";
 
 import { Cities } from "../Cities/Cities";
 import { Storage } from "../Storage/Storage";
@@ -12,6 +12,7 @@ import "./App.scss";
 
 export const App: FC = () => {
   const [currentCity, setCurrentCity] = useState<number>(1);
+  const [selectedGood, setSelectedGood] = useState<number | null>(1);
   const [storages, setStorages] = useState<storage[]>([
     {
       cityId: 1,
@@ -60,7 +61,7 @@ export const App: FC = () => {
   const [money, setMoney] = useState<number>(1000);
   const [days, setDays] = useState<number>(1);
 
-  const goods = [
+  const goods: good[] = [
     {
       id: 1,
       title: "Пиво",
@@ -129,6 +130,37 @@ export const App: FC = () => {
     }
   };
 
+  const sellGoods = (goodId: number, qty: number) => {
+    const storagesNew = storages;
+    let moneyNew = money;
+
+    const index = storagesNew.findIndex((storage) => {
+      return storage.cityId === currentCity;
+    });
+
+    if (index > -1) {
+      const goodIndex = storagesNew[index].storage.findIndex((good) => {
+        return good.id === goodId;
+      });
+
+      if (goodIndex > -1) {
+        storagesNew[index].storage[goodIndex].qty -= qty;
+        moneyNew += qty * 10;
+        setMoney(moneyNew);
+      }
+    }
+
+    setStorages(storagesNew);
+  };
+
+  const liveProcess = () => {
+    setTimeout(() => {
+      setDays(days + 1);
+    }, 5000);
+  };
+
+  liveProcess();
+
   return (
     <div className="app">
       <h1 className="app-name">Спекулянтик</h1>
@@ -146,7 +178,14 @@ export const App: FC = () => {
             <Storage
               currentCity={currentCity}
               storage={getStorageByCity()}
+              selectedGood={selectedGood}
               goods={goods}
+              onSelectGood={(goodId: number) => {
+                setSelectedGood(goodId);
+              }}
+              onSell={(id, qty) => {
+                sellGoods(id, qty);
+              }}
             />
           </div>
           <div className="transportations">
