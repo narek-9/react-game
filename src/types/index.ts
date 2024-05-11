@@ -11,6 +11,17 @@ export type storage = {
   }[];
 };
 
+export type cityStorage = {
+  cityId: number;
+  storage: {
+    id: number;
+    priceStats: number[];
+    maxStep: number;
+    minPrice: number;
+    maxPrice: number;
+  }[];
+};
+
 export type good = {
   id: number;
   title: string;

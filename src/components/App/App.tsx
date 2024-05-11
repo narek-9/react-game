@@ -1,6 +1,6 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
-import { good, storage } from "../../types";
+import { cityStorage, good, storage } from "../../types";
 
 import { Cities } from "../Cities/Cities";
 import { Storage } from "../Storage/Storage";
@@ -53,6 +53,35 @@ export const App: FC = () => {
         {
           id: 1,
           qty: 5,
+        },
+      ],
+    },
+  ]);
+
+  const [cityStorages, setCityStorages] = useState<cityStorage[]>([
+    {
+      cityId: 1,
+      storage: [
+        {
+          id: 1,
+          priceStats: [10, 15, 18, 13, 15, 18, 18],
+          maxStep: 5,
+          minPrice: 10,
+          maxPrice: 40,
+        },
+        {
+          id: 2,
+          priceStats: [12, 13, 14, 15, 16, 11, 18],
+          maxStep: 7,
+          minPrice: 5,
+          maxPrice: 70,
+        },
+        {
+          id: 3,
+          priceStats: [25, 28, 31, 27, 23, 20, 25],
+          maxStep: 8,
+          minPrice: 15,
+          maxPrice: 50,
         },
       ],
     },
@@ -153,13 +182,66 @@ export const App: FC = () => {
     setStorages(storagesNew);
   };
 
-  const liveProcess = () => {
-    setTimeout(() => {
-      setDays(days + 1);
-    }, 5000);
+  const getRandomInt = (max: number) => {
+    return Math.floor(Math.random() * Math.floor(max));
   };
 
-  liveProcess();
+  const updateCityStorages = () => {
+    const newCityStorages = cityStorages;
+
+    for (let cityIndex = 0; cityIndex < newCityStorages.length; cityIndex++) {
+      const storage = newCityStorages[cityIndex].storage;
+
+      for (let goodIndex = 0; goodIndex < storage.length; goodIndex++) {
+        const goodData = storage[goodIndex];
+        const priceChangeSign = getRandomInt(2) ? 1 : -1;
+
+        const priceChangeValue =
+          getRandomInt(goodData.maxStep) * priceChangeSign;
+
+        let newPrice =
+          (goodData.priceStats.slice(-1).pop() || 0) + priceChangeValue;
+
+        if (newPrice > goodData.maxPrice) {
+          newPrice = goodData.maxPrice;
+        } else if (newPrice < goodData.minPrice) {
+          newPrice = goodData.minPrice;
+        }
+
+        for (let i = 0; i < goodData.priceStats.length - 1; i++) {
+          goodData.priceStats[i] = goodData.priceStats[i + 1];
+        }
+
+        goodData.priceStats[goodData.priceStats.length - 1] = newPrice;
+        newCityStorages[cityIndex].storage[goodIndex] = goodData;
+      }
+    }
+
+    setCityStorages(newCityStorages);
+  };
+
+  const liveProcess = () => {
+    setInterval(() => {
+      updateCityStorages();
+      setDays((days) => days + 1);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    liveProcess();
+  }, []);
+
+  const getCityStorage = () => {
+    const store = cityStorages.find(
+      (storage) => storage.cityId === currentCity
+    );
+
+    if (store) {
+      return store.storage;
+    } else {
+      return [];
+    }
+  };
 
   return (
     <div className="app">
@@ -197,7 +279,7 @@ export const App: FC = () => {
         </div>
         <div className="column">
           <div className="city-storage">
-            <CityStorage />
+            <CityStorage storage={getCityStorage()} />
           </div>
         </div>
       </div>
