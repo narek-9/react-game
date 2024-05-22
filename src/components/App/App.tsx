@@ -17,10 +17,7 @@ export const App: FC = () => {
     {
       cityId: 1,
       storage: [
-        {
-          id: 1,
-          qty: 10,
-        },
+        
         {
           id: 2,
           qty: 20,
@@ -57,7 +54,6 @@ export const App: FC = () => {
       ],
     },
   ]);
-
   const [cityStorages, setCityStorages] = useState<cityStorage[]>([
     {
       cityId: 1,
@@ -86,7 +82,6 @@ export const App: FC = () => {
       ],
     },
   ]);
-
   const [money, setMoney] = useState<number>(1000);
   const [days, setDays] = useState<number>(1);
 
@@ -243,6 +238,36 @@ export const App: FC = () => {
     }
   };
 
+  const buyGoods = (goodId: number, qty: number, price: number) => {
+    const totalPrice = qty * price;
+
+    if (money >= totalPrice) {
+      const storagesNew = storages;
+
+      const index = storagesNew.findIndex((storage) => {
+        return storage.cityId === currentCity;
+      });
+
+      if (index > -1) {
+        const goodIndex = storagesNew[index].storage.findIndex((good) => {
+          return good.id === goodId;
+        });
+
+        if (goodIndex > -1) {
+          storagesNew[index].storage[goodIndex].qty += qty;
+        } else {
+          storagesNew[index].storage.push({
+            id: goodId,
+            qty,
+          });
+        }
+      }
+
+      setStorages(storagesNew);
+      setMoney(money - totalPrice);
+    }
+  };
+
   return (
     <div className="app">
       <h1 className="app-name">Спекулянтик</h1>
@@ -279,7 +304,12 @@ export const App: FC = () => {
         </div>
         <div className="column">
           <div className="city-storage">
-            <CityStorage storage={getCityStorage()} />
+            <CityStorage
+              storage={getCityStorage()}
+              onBuy={(goodId, qty, price) => {
+                buyGoods(goodId, qty, price);
+              }}
+            />
           </div>
         </div>
       </div>
