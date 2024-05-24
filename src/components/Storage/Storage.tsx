@@ -31,39 +31,40 @@ export const Storage: FC<IStorageProps> = ({
     return goods.find((item) => item.id === itemId)?.title;
   };
 
-  const getEmptyCells = () => {
-    if (storage.length < 8) {
-      return Array(8 - storage.length)
-        .fill(0)
-        .map((_, index) => {
-          return <li className="good-item no-item" key={index + 100}></li>;
-        });
-    }
-  };
-
   return (
     <div>
       <h2 className="title">Мой склад</h2>
 
       <div className="panel">
         <ul className="goods">
-          {storage.map((item) => {
-            return (
-              <li
-                className={
-                  "good-item item-" +
-                  item.id +
-                  (selectedGood === item.id ? " selected" : "")
-                }
-                onClick={() => onSelectGood(item.id)}
-                key={item.id}
-              >
-                <span className="good-description">{item.qty} шт.</span>
-              </li>
-            );
-          })}
+          {Array(8)
+            .fill(0)
+            .map((i, index) => {
+              if (storage[index]) {
+                const item = storage[index];
 
-          {getEmptyCells()}
+                return (
+                  <li
+                    key={"storage-item-" + item.id}
+                    className={
+                      "good-item item-" +
+                      item.id +
+                      (selectedGood === item.id ? " selected" : "")
+                    }
+                    onClick={() => onSelectGood(item.id)}
+                  >
+                    <span className="good-description">{item.qty} шт.</span>
+                  </li>
+                );
+              } else {
+                return (
+                  <li
+                    className="good-item no-item"
+                    key={"empty-cell-" + index}
+                  ></li>
+                );
+              }
+            })}
         </ul>
 
         {selectedGood ? (

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart,
@@ -8,6 +8,8 @@ import {
   PointElement,
   ChartOptions,
 } from "chart.js";
+
+import StorageItem from "./components/StorageItem";
 
 import "./CityStorage.scss";
 
@@ -25,8 +27,6 @@ interface ICityStorageProps {
 }
 
 export const CityStorage: FC<ICityStorageProps> = ({ storage, onBuy }) => {
-  const [number, setNumber] = useState<number>(0);
-
   const options: ChartOptions<"line"> = {
     elements: {
       line: {
@@ -87,40 +87,7 @@ export const CityStorage: FC<ICityStorageProps> = ({ storage, onBuy }) => {
           {storage.map((good) => {
             return (
               <div className="good-item-wrapper" key={good.id}>
-                <div className="good-item-description">
-                  <div className={"good-item item-" + good.id} />
-
-                  {number}
-                  <input
-                    type="text"
-                    name="count"
-                    autoComplete="false"
-                    maxLength={3}
-                    value={number}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setNumber(parseInt(e.currentTarget.value));
-                    }}
-                    className="input-number"
-                  />
-
-                  <button
-                    className="button"
-                    onClick={() => {
-                      onBuy(
-                        good.id,
-                        number,
-                        good.priceStats[good.priceStats.length - 1]
-                      );
-                      setNumber(0);
-                    }}
-                  >
-                    Купить
-                  </button>
-
-                  <p className="price-description">
-                    {good.priceStats[good.priceStats.length - 1]} за шт.
-                  </p>
-                </div>
+                <StorageItem good={good} onBuy={onBuy} />
                 <div className="good-item-stats">
                   <Line data={getGoodData(good.priceStats)} options={options} />
                 </div>

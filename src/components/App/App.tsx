@@ -17,7 +17,10 @@ export const App: FC = () => {
     {
       cityId: 1,
       storage: [
-        
+        {
+          id: 1,
+          qty: 10,
+        },
         {
           id: 2,
           qty: 20,
