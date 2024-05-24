@@ -8,24 +8,27 @@ interface IStorageProps {
     id: number;
     qty: number;
   }[];
-  selectedGood: number | null;
+  selectedGoodId: number;
   goods: {
     id: number;
     title: string;
   }[];
   onSelectGood: (goodId: number) => void;
   onSell: (goodId: number, qty: number) => void;
+  onTransport: (targetCityId: number) => void;
 }
 
 export const Storage: FC<IStorageProps> = ({
   currentCity,
   storage,
-  selectedGood,
+  selectedGoodId,
   goods,
   onSelectGood,
   onSell,
+  onTransport,
 }) => {
   const [qty, setQty] = useState<number>(0);
+  const [targetCityId, setTargetCityId] = useState<number>(1);
 
   const findFoodById = (itemId: number) => {
     return goods.find((item) => item.id === itemId)?.title;
@@ -49,7 +52,7 @@ export const Storage: FC<IStorageProps> = ({
                     className={
                       "good-item item-" +
                       item.id +
-                      (selectedGood === item.id ? " selected" : "")
+                      (selectedGoodId === item.id ? " selected" : "")
                     }
                     onClick={() => onSelectGood(item.id)}
                   >
@@ -67,29 +70,57 @@ export const Storage: FC<IStorageProps> = ({
             })}
         </ul>
 
-        {selectedGood ? (
-          <div className="sell-panel">
-            <div>{findFoodById(selectedGood)}</div>
-            <div className="controls">
-              <input
-                type="text"
-                className="input"
-                value={qty}
-                onChange={(e) => {
-                  setQty(parseInt(e.target.value));
-                }}
-              />
-              шт.
-              <button
-                className="button"
-                onClick={() => {
-                  onSell(selectedGood, qty);
-                }}
-              >
-                Продать
-              </button>
+        {selectedGoodId ? (
+          <>
+            <div className="sell-panel">
+              <div>{findFoodById(selectedGoodId)}</div>
+              <div className="controls">
+                <input
+                  type="text"
+                  className="input"
+                  value={qty}
+                  onChange={(e) => {
+                    setQty(parseInt(e.target.value));
+                  }}
+                />
+                шт.
+                <button
+                  className="button"
+                  onClick={() => {
+                    onSell(selectedGoodId, qty);
+                  }}
+                >
+                  Продать
+                </button>
+              </div>
             </div>
-          </div>
+
+            <div className="order-panel">
+              <div>
+                <select
+                  className="select-city"
+                  value={targetCityId}
+                  onChange={(e) => {
+                    setTargetCityId(parseInt(e.currentTarget.value, 10));
+                  }}
+                >
+                  <option value={1}>Город 1</option>
+                  <option value={2}>Город 2</option>
+                  <option value={3}>Город 3</option>
+                </select>
+              </div>
+              <div className="controls">
+                <button
+                  className="button"
+                  onClick={() => {
+                    onTransport(targetCityId);
+                  }}
+                >
+                  Перевезти
+                </button>
+              </div>
+            </div>
+          </>
         ) : (
           ""
         )}

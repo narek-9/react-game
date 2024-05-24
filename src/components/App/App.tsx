@@ -12,7 +12,7 @@ import "./App.scss";
 
 export const App: FC = () => {
   const [currentCity, setCurrentCity] = useState<number>(1);
-  const [selectedGood, setSelectedGood] = useState<number | null>(1);
+  const [selectedGoodId, setSelectedGoodId] = useState<number>(1);
   const [storages, setStorages] = useState<storage[]>([
     {
       cityId: 1,
@@ -147,6 +147,15 @@ export const App: FC = () => {
     },
   ];
 
+  const [transportOrders, setTransportOrders] = useState<
+    {
+      targetCityId: number;
+      goodId: number;
+      qty: number;
+      days: number;
+    }[]
+  >([]);
+
   const getStorageByCity = () => {
     const store = storages.find((storage) => storage.cityId === currentCity);
 
@@ -241,6 +250,25 @@ export const App: FC = () => {
     }
   };
 
+  const createTrasnportOrder = (targetCityId: number) => {
+    const newOrders = transportOrders;
+
+    const storage = getStorageByCity();
+
+    const goodIndex = storage.findIndex((good) => good.id === selectedGoodId);
+
+    if (goodIndex > -1) {
+      newOrders.push({
+        targetCityId,
+        goodId: selectedGoodId,
+        qty: storage[goodIndex].qty,
+        days: 30,
+      });
+
+      setTransportOrders(newOrders);
+    }
+  };
+
   const buyGoods = (goodId: number, qty: number, price: number) => {
     const totalPrice = qty * price;
 
@@ -288,13 +316,16 @@ export const App: FC = () => {
             <Storage
               currentCity={currentCity}
               storage={getStorageByCity()}
-              selectedGood={selectedGood}
+              selectedGoodId={selectedGoodId}
               goods={goods}
               onSelectGood={(goodId: number) => {
-                setSelectedGood(goodId);
+                setSelectedGoodId(goodId);
               }}
               onSell={(id, qty) => {
                 sellGoods(id, qty);
+              }}
+              onTransport={(targetCityId: number) => {
+                createTrasnportOrder(targetCityId);
               }}
             />
           </div>
