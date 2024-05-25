@@ -3,7 +3,7 @@ import { FC, useState } from "react";
 import "./Storage.scss";
 
 interface IStorageProps {
-  currentCity: number;
+  currentCityId: number;
   storage: {
     id: number;
     qty: number;
@@ -19,7 +19,7 @@ interface IStorageProps {
 }
 
 export const Storage: FC<IStorageProps> = ({
-  currentCity,
+  currentCityId,
   storage,
   selectedGoodId,
   goods,

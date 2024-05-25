@@ -1,27 +1,21 @@
 import { FC } from "react";
 
-import { city } from "../../types/index";
+import { cities } from "../../cities";
 
 import "./Cities.scss";
 
 interface ICitiesProps {
-  currentCity: number;
+  currentCityId: number;
   onChange: (city: number) => void;
 }
 
-export const Cities: FC<ICitiesProps> = ({ currentCity, onChange }) => {
-  const cities: city[] = [
-    { id: 1, title: "Город 1" },
-    { id: 2, title: "Город 2" },
-    { id: 3, title: "Город 3" },
-  ];
-
+export const Cities: FC<ICitiesProps> = ({ currentCityId, onChange }) => {
   return (
     <div className="cities-list">
       {cities.map((city) => {
         return (
           <a
-            className={"city " + (currentCity === city.id ? "active" : "")}
+            className={"city " + (currentCityId === city.id ? "active" : "")}
             href=""
             onClick={(e) => {
               e.preventDefault();

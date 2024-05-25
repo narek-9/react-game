@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 
-import { cityStorage, good, storage } from "../../types";
+import { cityStorage, good, storage, transportOrder } from "../../types";
 
 import { Cities } from "../Cities/Cities";
 import { Storage } from "../Storage/Storage";
@@ -11,50 +11,24 @@ import { CityStorage } from "../CityStorage/CityStorage";
 import "./App.scss";
 
 export const App: FC = () => {
-  const [currentCity, setCurrentCity] = useState<number>(1);
+  const [currentCityId, setcurrentCityId] = useState<number>(1);
   const [selectedGoodId, setSelectedGoodId] = useState<number>(1);
   const [storages, setStorages] = useState<storage[]>([
     {
       cityId: 1,
       storage: [
-        {
-          id: 1,
-          qty: 10,
-        },
-        {
-          id: 2,
-          qty: 20,
-        },
-        {
-          id: 3,
-          qty: 204,
-        },
-        {
-          id: 4,
-          qty: 200,
-        },
-        {
-          id: 5,
-          qty: 120,
-        },
-        {
-          id: 6,
-          qty: 10,
-        },
-        {
-          id: 7,
-          qty: 2,
-        },
+        { id: 1, qty: 10 },
+        { id: 2, qty: 20 },
+        { id: 3, qty: 204 },
+        { id: 4, qty: 200 },
+        { id: 5, qty: 120 },
+        { id: 6, qty: 10 },
+        { id: 7, qty: 2 },
       ],
     },
     {
       cityId: 2,
-      storage: [
-        {
-          id: 1,
-          qty: 5,
-        },
-      ],
+      storage: [{ id: 1, qty: 5 }],
     },
   ]);
   const [cityStorages, setCityStorages] = useState<cityStorage[]>([
@@ -87,97 +61,44 @@ export const App: FC = () => {
   ]);
   const [money, setMoney] = useState<number>(1000);
   const [days, setDays] = useState<number>(1);
+  const [transportOrders, setTransportOrders] = useState<transportOrder[]>([]);
+
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goods: good[] = [
-    {
-      id: 1,
-      title: "Пиво",
-    },
-    {
-      id: 2,
-      title: "Молоко",
-    },
-    {
-      id: 3,
-      title: "Пшеница",
-    },
-    {
-      id: 4,
-      title: "Грибы",
-    },
-    {
-      id: 5,
-      title: "Клевер",
-    },
-    {
-      id: 6,
-      title: "Лук",
-    },
-    {
-      id: 7,
-      title: "Виноград",
-    },
-    {
-      id: 8,
-      title: "Орехи",
-    },
-    {
-      id: 9,
-      title: "Вилы",
-    },
-    {
-      id: 10,
-      title: "Доски",
-    },
-    {
-      id: 11,
-      title: "Коса",
-    },
-    {
-      id: 12,
-      title: "Лопата",
-    },
-    {
-      id: 13,
-      title: "Топор",
-    },
-    {
-      id: 14,
-      title: "Кирка",
-    },
+    { id: 1, title: "Пиво" },
+    { id: 2, title: "Молоко" },
+    { id: 3, title: "Пшеница" },
+    { id: 4, title: "Грибы" },
+    { id: 5, title: "Клевер" },
+    { id: 6, title: "Лук" },
+    { id: 7, title: "Виноград" },
+    { id: 8, title: "Орехи" },
+    { id: 9, title: "Вилы" },
+    { id: 10, title: "Доски" },
+    { id: 11, title: "Коса" },
+    { id: 12, title: "Лопата" },
+    { id: 13, title: "Топор" },
+    { id: 14, title: "Кирка" },
   ];
 
-  const [transportOrders, setTransportOrders] = useState<
-    {
-      targetCityId: number;
-      goodId: number;
-      qty: number;
-      days: number;
-    }[]
-  >([]);
-
   const getStorageByCity = () => {
-    const store = storages.find((storage) => storage.cityId === currentCity);
-
-    if (store) {
-      return store.storage;
-    } else {
-      return [];
-    }
+    const store = storages.find((storage) => storage.cityId === currentCityId);
+    return store ? store.storage : [];
   };
 
   const sellGoods = (goodId: number, qty: number) => {
-    const storagesNew = storages;
+    const storagesNew = [...storages];
     let moneyNew = money;
 
-    const index = storagesNew.findIndex((storage) => {
-      return storage.cityId === currentCity;
-    });
+    const index = storagesNew.findIndex(
+      (storage) => storage.cityId === currentCityId
+    );
 
     if (index > -1) {
-      const goodIndex = storagesNew[index].storage.findIndex((good) => {
-        return good.id === goodId;
-      });
+      const goodIndex = storagesNew[index].storage.findIndex(
+        (good) => good.id === goodId
+      );
 
       if (goodIndex > -1) {
         storagesNew[index].storage[goodIndex].qty -= qty;
@@ -189,23 +110,17 @@ export const App: FC = () => {
     setStorages(storagesNew);
   };
 
-  const getRandomInt = (max: number) => {
-    return Math.floor(Math.random() * Math.floor(max));
-  };
+  const getRandomInt = (max: number) =>
+    Math.floor(Math.random() * Math.floor(max));
 
   const updateCityStorages = () => {
-    const newCityStorages = cityStorages;
+    const newCityStorages = [...cityStorages];
 
-    for (let cityIndex = 0; cityIndex < newCityStorages.length; cityIndex++) {
-      const storage = newCityStorages[cityIndex].storage;
-
-      for (let goodIndex = 0; goodIndex < storage.length; goodIndex++) {
-        const goodData = storage[goodIndex];
+    newCityStorages.forEach((cityStorage) => {
+      cityStorage.storage.forEach((goodData) => {
         const priceChangeSign = getRandomInt(2) ? 1 : -1;
-
         const priceChangeValue =
           getRandomInt(goodData.maxStep) * priceChangeSign;
-
         let newPrice =
           (goodData.priceStats.slice(-1).pop() || 0) + priceChangeValue;
 
@@ -215,50 +130,60 @@ export const App: FC = () => {
           newPrice = goodData.minPrice;
         }
 
-        for (let i = 0; i < goodData.priceStats.length - 1; i++) {
-          goodData.priceStats[i] = goodData.priceStats[i + 1];
-        }
-
-        goodData.priceStats[goodData.priceStats.length - 1] = newPrice;
-        newCityStorages[cityIndex].storage[goodIndex] = goodData;
-      }
-    }
+        goodData.priceStats.push(newPrice);
+        goodData.priceStats.shift();
+      });
+    });
 
     setCityStorages(newCityStorages);
   };
 
+  const updateTransportOrders = () => {
+    setTransportOrders((oldTransportOrders) =>
+      oldTransportOrders.map((order) => ({
+        ...order,
+        days: order.days > 0 ? order.days - 1 : order.days,
+      }))
+    );
+  };
+
   const liveProcess = () => {
-    setInterval(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(() => {
       updateCityStorages();
+      updateTransportOrders();
       setDays((days) => days + 1);
     }, 2000);
   };
 
   useEffect(() => {
     liveProcess();
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
   const getCityStorage = () => {
     const store = cityStorages.find(
-      (storage) => storage.cityId === currentCity
+      (storage) => storage.cityId === currentCityId
     );
-
-    if (store) {
-      return store.storage;
-    } else {
-      return [];
-    }
+    return store ? store.storage : [];
   };
 
-  const createTrasnportOrder = (targetCityId: number) => {
-    const newOrders = transportOrders;
-
+  const createTransportOrder = (targetCityId: number) => {
+    const newOrders = [...transportOrders];
     const storage = getStorageByCity();
-
     const goodIndex = storage.findIndex((good) => good.id === selectedGoodId);
 
     if (goodIndex > -1) {
       newOrders.push({
+        fromCityId: currentCityId,
         targetCityId,
         goodId: selectedGoodId,
         qty: storage[goodIndex].qty,
@@ -273,29 +198,25 @@ export const App: FC = () => {
     const totalPrice = qty * price;
 
     if (money >= totalPrice) {
-      const storagesNew = storages;
-
-      const index = storagesNew.findIndex((storage) => {
-        return storage.cityId === currentCity;
-      });
+      const storagesNew = [...storages];
+      const index = storagesNew.findIndex(
+        (storage) => storage.cityId === currentCityId
+      );
 
       if (index > -1) {
-        const goodIndex = storagesNew[index].storage.findIndex((good) => {
-          return good.id === goodId;
-        });
+        const goodIndex = storagesNew[index].storage.findIndex(
+          (good) => good.id === goodId
+        );
 
         if (goodIndex > -1) {
           storagesNew[index].storage[goodIndex].qty += qty;
         } else {
-          storagesNew[index].storage.push({
-            id: goodId,
-            qty,
-          });
+          storagesNew[index].storage.push({ id: goodId, qty });
         }
-      }
 
-      setStorages(storagesNew);
-      setMoney(money - totalPrice);
+        setStorages(storagesNew);
+        setMoney(money - totalPrice);
+      }
     }
   };
 
@@ -303,34 +224,23 @@ export const App: FC = () => {
     <div className="app">
       <h1 className="app-name">Спекулянтик</h1>
 
-      <Cities
-        currentCity={currentCity}
-        onChange={(city: number) => {
-          setCurrentCity(city);
-        }}
-      />
+      <Cities currentCityId={currentCityId} onChange={setcurrentCityId} />
 
       <div className="content">
         <div className="column">
           <div className="storage">
             <Storage
-              currentCity={currentCity}
+              currentCityId={currentCityId}
               storage={getStorageByCity()}
               selectedGoodId={selectedGoodId}
               goods={goods}
-              onSelectGood={(goodId: number) => {
-                setSelectedGoodId(goodId);
-              }}
-              onSell={(id, qty) => {
-                sellGoods(id, qty);
-              }}
-              onTransport={(targetCityId: number) => {
-                createTrasnportOrder(targetCityId);
-              }}
+              onSelectGood={setSelectedGoodId}
+              onSell={sellGoods}
+              onTransport={createTransportOrder}
             />
           </div>
           <div className="transportations">
-            <Transportations />
+            <Transportations orders={transportOrders} goods={goods} />
           </div>
           <div className="stats">
             <Stats days={days} money={money} />
@@ -338,12 +248,7 @@ export const App: FC = () => {
         </div>
         <div className="column">
           <div className="city-storage">
-            <CityStorage
-              storage={getCityStorage()}
-              onBuy={(goodId, qty, price) => {
-                buyGoods(goodId, qty, price);
-              }}
-            />
+            <CityStorage storage={getCityStorage()} onBuy={buyGoods} />
           </div>
         </div>
       </div>

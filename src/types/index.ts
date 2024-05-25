@@ -26,3 +26,11 @@ export type good = {
   id: number;
   title: string;
 };
+
+export type transportOrder = {
+  fromCityId: number;
+  targetCityId: number;
+  goodId: number;
+  qty: number;
+  days: number;
+};
