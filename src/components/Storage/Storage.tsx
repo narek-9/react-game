@@ -42,13 +42,13 @@ export const Storage: FC<IStorageProps> = ({
         <ul className="goods">
           {Array(8)
             .fill(0)
-            .map((i, index) => {
+            .map((_, index) => {
               if (storage[index]) {
                 const item = storage[index];
 
                 return (
                   <li
-                    key={"storage-item-" + item.id}
+                    key={index}
                     className={
                       "good-item item-" +
                       item.id +
@@ -60,12 +60,7 @@ export const Storage: FC<IStorageProps> = ({
                   </li>
                 );
               } else {
-                return (
-                  <li
-                    className="good-item no-item"
-                    key={"empty-cell-" + index}
-                  ></li>
-                );
+                return <li className="good-item no-item" key={index}></li>;
               }
             })}
         </ul>
@@ -79,8 +74,9 @@ export const Storage: FC<IStorageProps> = ({
                   type="text"
                   className="input"
                   value={qty}
+                  maxLength={3}
                   onChange={(e) => {
-                    setQty(parseInt(e.target.value));
+                    setQty(parseInt(e.target.value) || 0);
                   }}
                 />
                 шт.

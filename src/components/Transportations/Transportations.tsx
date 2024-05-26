@@ -1,18 +1,20 @@
 import { FC } from "react";
 
+import { cities } from "../../cities";
 import { transportOrder, good } from "../../types";
 
 import "./Transportations.scss";
-import { cities } from "../../cities";
 
 interface ITransportationsProps {
   orders: transportOrder[];
   goods: good[];
+  onAcceptOrder: (order: transportOrder) => void;
 }
 
 export const Transportations: FC<ITransportationsProps> = ({
   orders,
   goods,
+  onAcceptOrder,
 }) => {
   const findGoodById = (goodId: number) => {
     return goods.find((good) => {
@@ -39,7 +41,9 @@ export const Transportations: FC<ITransportationsProps> = ({
               </div>
               <div className="good-item-transport-info">
                 <div>
-                  <div className="header">{findGoodById(order.goodId)}</div>
+                  <div className="header">
+                    {findGoodById(order.goodId)} {order.qty} шт.
+                  </div>
                   <div className="path">
                     {getCityNameById(order.fromCityId)} -{" "}
                     {getCityNameById(order.targetCityId)}
@@ -47,7 +51,13 @@ export const Transportations: FC<ITransportationsProps> = ({
                 </div>
                 <div>
                   <div className="days">Дни: {order.days}</div>
-                  <button className="button" disabled={!!order.days}>
+                  <button
+                    className="button"
+                    disabled={!!order.days}
+                    onClick={() => {
+                      onAcceptOrder(order);
+                    }}
+                  >
                     Получить
                   </button>
                 </div>

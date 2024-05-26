@@ -28,6 +28,7 @@ export type good = {
 };
 
 export type transportOrder = {
+  id: number;
   fromCityId: number;
   targetCityId: number;
   goodId: number;

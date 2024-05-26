@@ -86,7 +86,7 @@ export const CityStorage: FC<ICityStorageProps> = ({ storage, onBuy }) => {
         <div className="city-goods">
           {storage.map((good) => {
             return (
-              <div className="good-item-wrapper" key={good.id}>
+              <div className="good-item-wrapper" key={ good.id}>
                 <StorageItem good={good} onBuy={onBuy} />
                 <div className="good-item-stats">
                   <Line data={getGoodData(good.priceStats)} options={options} />

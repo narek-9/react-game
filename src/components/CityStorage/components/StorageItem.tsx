@@ -25,7 +25,7 @@ export const StorageItem: FC<IStorageItemProps> = ({ good, onBuy }) => {
         value={number}
         maxLength={3}
         onChange={(e) => {
-          setNumber(Number(e.currentTarget.value));
+          setNumber(Number(e.currentTarget.value) || 0);
         }}
       />
 
