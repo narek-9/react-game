@@ -1,5 +1,7 @@
 import { FC, useState } from "react";
 
+import { cities } from "../../cities";
+
 import "./Storage.scss";
 
 interface IStorageProps {
@@ -13,8 +15,9 @@ interface IStorageProps {
     id: number;
     title: string;
   }[];
+  selectedProductPrice: number;
   onSelectGood: (goodId: number) => void;
-  onSell: (goodId: number, qty: number) => void;
+  onSell: (goodId: number, qty: number, getTotalPrice: number) => void;
   onTransport: (targetCityId: number) => void;
 }
 
@@ -23,6 +26,7 @@ export const Storage: FC<IStorageProps> = ({
   storage,
   selectedGoodId,
   goods,
+  selectedProductPrice,
   onSelectGood,
   onSell,
   onTransport,
@@ -32,6 +36,10 @@ export const Storage: FC<IStorageProps> = ({
 
   const findFoodById = (itemId: number) => {
     return goods.find((item) => item.id === itemId)?.title;
+  };
+
+  const getTotalPrice = () => {
+    return Math.round(selectedProductPrice * qty * 0.9);
   };
 
   return (
@@ -68,27 +76,38 @@ export const Storage: FC<IStorageProps> = ({
         {selectedGoodId ? (
           <>
             <div className="sell-panel">
-              <div>{findFoodById(selectedGoodId)}</div>
-              <div className="controls">
-                <input
-                  type="text"
-                  className="input"
-                  value={qty}
-                  maxLength={3}
-                  onChange={(e) => {
-                    setQty(parseInt(e.target.value) || 0);
-                  }}
-                />
-                шт.
-                <button
-                  className="button"
-                  onClick={() => {
-                    onSell(selectedGoodId, qty);
-                  }}
-                >
-                  Продать
-                </button>
+              <div className="sell-panel-content">
+                <div>{findFoodById(selectedGoodId) || "Unknown"}</div>
+                <div className="controls">
+                  <input
+                    type="text"
+                    className="input"
+                    value={qty}
+                    maxLength={3}
+                    onChange={(e) => {
+                      setQty(parseInt(e.target.value) || 0);
+                    }}
+                  />
+                  шт.
+                  <button
+                    className="button"
+                    onClick={() => {
+                      onSell(selectedGoodId, qty, getTotalPrice());
+                    }}
+                    disabled={!qty || !selectedProductPrice}
+                  >
+                    Продать
+                  </button>
+                </div>
               </div>
+              {qty && selectedProductPrice ? (
+                <div className="sell-panel-info">
+                  По цене {selectedProductPrice} x {qty} шт, налог: 10%. Итого:{" "}
+                  {getTotalPrice()}
+                </div>
+              ) : (
+                ""
+              )}
             </div>
 
             <div className="order-panel">
@@ -100,9 +119,17 @@ export const Storage: FC<IStorageProps> = ({
                     setTargetCityId(parseInt(e.currentTarget.value, 10));
                   }}
                 >
-                  <option value={1}>Город 1</option>
-                  <option value={2}>Город 2</option>
-                  <option value={3}>Город 3</option>
+                  {cities.map((city) => {
+                    return (
+                      <option
+                        disabled={city.id === currentCityId}
+                        value={city.id}
+                        key={city.id}
+                      >
+                        {city.title}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
               <div className="controls">
@@ -111,6 +138,7 @@ export const Storage: FC<IStorageProps> = ({
                   onClick={() => {
                     onTransport(targetCityId);
                   }}
+                  disabled={targetCityId === currentCityId}
                 >
                   Перевезти
                 </button>
