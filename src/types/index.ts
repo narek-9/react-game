@@ -35,3 +35,9 @@ export type transportOrder = {
   qty: number;
   days: number;
 };
+
+export type deposit = {
+  id: number;
+  amount: number;
+  days: number;
+};

@@ -33,9 +33,9 @@ export const Transportations: FC<ITransportationsProps> = ({
       <h2 className="title">Активные перевозки</h2>
 
       <div className="panel">
-        {orders.map((order, i) => {
+        {orders.map((order) => {
           return (
-            <div className="good-item-wrapper" key={i}>
+            <div className="good-item-wrapper" key={order.id}>
               <div className="good-item-description">
                 <div className={"good-item item-" + order.goodId} />
               </div>
