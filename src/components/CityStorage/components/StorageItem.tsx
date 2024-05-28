@@ -20,8 +20,8 @@ export const StorageItem: FC<IStorageItemProps> = ({ good, onBuy }) => {
 
       <input
         className="input-number"
-        name="count"
-        autoComplete="false"
+        name={"count" + new Date()}
+        autoComplete="new-password"
         value={number}
         maxLength={3}
         onChange={(e) => {
@@ -32,8 +32,10 @@ export const StorageItem: FC<IStorageItemProps> = ({ good, onBuy }) => {
       <button
         className="button"
         onClick={() => {
-          onBuy(good.id, number, good.priceStats[good.priceStats.length - 1]);
-          setNumber(0);
+          if (number) {
+            onBuy(good.id, number, good.priceStats[good.priceStats.length - 1]);
+            setNumber(0);
+          }
         }}
       >
         Купить

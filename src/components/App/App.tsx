@@ -35,7 +35,7 @@ export const App: FC = () => {
 
   return (
     <div className="app">
-      <h1 className="app-name">Спекулянтик</h1>
+      <h1 className="app-name">Деревенский трейдер</h1>
 
       <Cities currentCityId={currentCityId} onChange={setcurrentCityId} />
 

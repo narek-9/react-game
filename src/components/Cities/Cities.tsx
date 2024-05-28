@@ -14,9 +14,8 @@ export const Cities: FC<ICitiesProps> = ({ currentCityId, onChange }) => {
     <div className="cities-list">
       {cities.map((city) => {
         return (
-          <a
+          <span
             className={"city " + (currentCityId === city.id ? "active" : "")}
-            href=""
             onClick={(e) => {
               e.preventDefault();
               onChange(city.id);
@@ -24,7 +23,7 @@ export const Cities: FC<ICitiesProps> = ({ currentCityId, onChange }) => {
             key={city.id}
           >
             {city.title}
-          </a>
+          </span>
         );
       })}
     </div>

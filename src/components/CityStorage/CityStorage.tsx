@@ -41,8 +41,8 @@ export const CityStorage: FC<ICityStorageProps> = ({ storage, onBuy }) => {
         mode: "index",
         intersect: false,
         caretSize: 3,
-        backgroundColor: "#44200c",
-        borderColor: "#877f72",
+        backgroundColor: "#8d6048",
+        borderColor: "#8d6048",
         borderWidth: 1,
         displayColors: false,
         callbacks: {
@@ -52,6 +52,9 @@ export const CityStorage: FC<ICityStorageProps> = ({ storage, onBuy }) => {
     },
     scales: {
       y: {
+        ticks: {
+          stepSize: 1,
+        },
         beginAtZero: false,
         grid: {
           display: false,
@@ -71,8 +74,8 @@ export const CityStorage: FC<ICityStorageProps> = ({ storage, onBuy }) => {
           label: "Цена за шт.",
           data: priceStats,
           fill: false,
-          backgroundColor: "#a68156",
-          borderColor: "rgba(166, 129, 86, 0.2)",
+          backgroundColor: "#8d6048",
+          borderColor: "#8d604844",
         },
       ],
     };
@@ -86,7 +89,7 @@ export const CityStorage: FC<ICityStorageProps> = ({ storage, onBuy }) => {
         <div className="city-goods">
           {storage.map((good) => {
             return (
-              <div className="good-item-wrapper" key={ good.id}>
+              <div className="good-item-wrapper" key={good.id}>
                 <StorageItem good={good} onBuy={onBuy} />
                 <div className="good-item-stats">
                   <Line data={getGoodData(good.priceStats)} options={options} />
