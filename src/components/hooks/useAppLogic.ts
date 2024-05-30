@@ -4,6 +4,8 @@ import {
   defaultCityStoragesData,
   defaultDeposits,
   defaultStoragesData,
+  gameStatuses,
+  settings,
 } from "../../config";
 import { cityStorage, deposit, storage, transportOrder } from "../../types";
 
@@ -17,10 +19,12 @@ export const useAppLogic = () => {
   const [cityStorages, setCityStorages] = useState<cityStorage[]>(
     defaultCityStoragesData
   );
-  const [money, setMoney] = useState<number>(1000);
+  const [money, setMoney] = useState<number>(settings.startMoney);
   const [days, setDays] = useState<number>(1);
   const [transportOrders, setTransportOrders] = useState<transportOrder[]>([]);
   const [orderId, setOrderId] = useState<number>(1);
+
+  const [gameStatus, setGameStatus] = useState(gameStatuses.new);
 
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -134,23 +138,35 @@ export const useAppLogic = () => {
       clearInterval(intervalRef.current);
     }
 
-    intervalRef.current = setInterval(() => {
+    intervalRef.current = setTimeout(() => {
       updateCityStorages();
       updateTransportOrders();
       updateDeposits();
+      checkGameStatus(days + 1);
+
       setDays((days) => days + 1);
-    }, 3000);
+    }, 5000);
+  };
+
+  const checkGameStatus = (days: number) => {
+    if (days >= settings.goalDays && money < settings.goalMoney) {
+      setGameStatus(gameStatuses.fail);
+    } else if (money >= settings.goalMoney) {
+      setGameStatus(gameStatuses.win);
+    }
   };
 
   useEffect(() => {
-    liveProcess();
+    if (gameStatus === gameStatuses.new) {
+      liveProcess();
+    }
 
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+        clearTimeout(intervalRef.current);
       }
     };
-  }, []);
+  }, [days]);
 
   const createTransportOrder = (targetCityId: number) => {
     const newOrders = [...transportOrders];
@@ -303,6 +319,7 @@ export const useAppLogic = () => {
     money,
     deposits,
     cityStorages,
+    gameStatus,
     setcurrentCityId,
     setSelectedGoodId,
     getCurrentStorage,

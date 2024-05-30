@@ -1,5 +1,7 @@
 import { FC } from "react";
 
+import { settings } from "../../config";
+
 import "./Stats.scss";
 
 interface IStateProps {
@@ -13,8 +15,12 @@ export const Stats: FC<IStateProps> = ({ days, money }) => {
       <h2 className="title">Статистика</h2>
 
       <div className="panel stats-panel">
-        <div className="money">{money}</div>
-        <div className="days">Дни: {days}</div>
+        <div className="money">
+          {money} / {settings.goalMoney}
+        </div>
+        <div className="days">
+          Дни: {days} / {settings.goalDays}
+        </div>
       </div>
     </div>
   );

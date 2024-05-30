@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 import { useAppLogic } from "../hooks/useAppLogic";
-import { goods } from "../../config";
+import { gameStatuses, goods } from "../../config";
 import { cityStorage, storage } from "../../types";
 
 import { Cities } from "../Cities/Cities";
@@ -23,6 +23,7 @@ export const App: FC = () => {
     money,
     deposits,
     cityStorages,
+    gameStatus,
     setcurrentCityId,
     setSelectedGoodId,
     getCurrentStorage,
@@ -37,6 +38,14 @@ export const App: FC = () => {
   return (
     <div className="app">
       <h1 className="app-name">Деревенский трейдер</h1>
+
+      {gameStatus === gameStatuses.win && (
+        <h2 className="game-status win">Вы выиграли!</h2>
+      )}
+
+      {gameStatus === gameStatuses.fail && (
+        <h2 className="game-status fail">Вы проиграли!</h2>
+      )}
 
       <Cities currentCityId={currentCityId} onChange={setcurrentCityId} />
 
@@ -70,7 +79,11 @@ export const App: FC = () => {
             <Stats days={days} money={money} />
           </div>
           <div className="deposits">
-            <Bank deposits={deposits} onOpenDeposit={openDeposit} money={money}/>
+            <Bank
+              deposits={deposits}
+              onOpenDeposit={openDeposit}
+              money={money}
+            />
           </div>
         </div>
         <div className="column">
