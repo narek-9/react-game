@@ -11,6 +11,7 @@ export const useAppLogic = () => {
   const [currentCityId, setcurrentCityId] = useState<number>(1);
   const [selectedGoodId, setSelectedGoodId] = useState<number>(1);
   const [deposits, setDeposits] = useState<deposit[]>(defaultDeposits);
+  const [depositId, setDepositId] = useState<number>(3);
   const [playerStorages, setPlayerStorages] =
     useState<storage[]>(defaultStoragesData);
   const [cityStorages, setCityStorages] = useState<cityStorage[]>(
@@ -272,6 +273,27 @@ export const useAppLogic = () => {
     return 0;
   };
 
+  const openDeposit = (amount: number) => {
+    if (amount > 0 && money >= amount) {
+      setDeposits((oldDeposits) => {
+        const newDeposits = oldDeposits.map((deposit) => ({ ...deposit }));
+
+        newDeposits.push({
+          id: depositId,
+          days: 30,
+          amount,
+        });
+
+        setDepositId(depositId + 1);
+        setMoney((oldMoney) => {
+          return oldMoney - amount;
+        });
+
+        return newDeposits;
+      });
+    }
+  };
+
   return {
     currentCityId,
     playerStorages,
@@ -289,5 +311,6 @@ export const useAppLogic = () => {
     createTransportOrder,
     acceptOrder,
     buyGoods,
+    openDeposit,
   };
 };
